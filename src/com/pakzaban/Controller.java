@@ -1,17 +1,12 @@
 package com.pakzaban;
 
 import javafx.animation.AnimationTimer;
-import javafx.event.Event;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Effect;
-import javafx.scene.effect.Shadow;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
@@ -97,7 +92,7 @@ public class Controller {
                     xVel++;
                     yVel++;
                     paddleVel +=3;
-                    System.out.println(xVel+ ", " +yVel);
+                    System.out.println(paddleVel+ ", " + xVel+ ", " +yVel);
                 }
 
                 if(stopButton.isPressed()){
@@ -125,10 +120,10 @@ public class Controller {
 
     public void keyUsed(javafx.scene.input.KeyEvent ke) {
 
-        if (ke.getText().equals("p") && r.getY()>= paddleVel) {
+        if (ke.getText().equals("p") && r.getY()>= 50) {
             r.setY(r.getY() - paddleVel);
         }
-        if (ke.getText().equals("l") && r.getY() + r.getHeight() <= graphPane.getHeight()-paddleVel) {
+        if (ke.getText().equals("l") && r.getY() + r.getHeight() <= graphPane.getHeight()-50) {
             r.setY(r.getY() + paddleVel);
         }
     }
