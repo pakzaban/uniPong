@@ -30,7 +30,7 @@ public class Controller {
     private int score;
     private AnimationTimer at;
     private int counter;
-    private int paddleVel = 50;
+    private int paddleVel;
 
     public void initialize() {
         graphPane.getChildren().clear();
@@ -48,6 +48,7 @@ public class Controller {
         angle = randomAngle();
         xVel = vel * Math.cos(angle);
         yVel = vel * Math.sin(angle);
+        paddleVel = 50;
         score = 0;
         counter = 0;
 
@@ -63,29 +64,31 @@ public class Controller {
             public void handle(long l) {
                 tol = Math.abs(xVel);
                 //horizontal wall collisions
-                if (Math.abs(c1.getCenterX() - (graphPane.getWidth() - radius)) < tol) {
-                    xVel = -Math.abs(xVel);
-                } else if (Math.abs(c1.getCenterX() - radius) < tol) {
-                    xVel = Math.abs(xVel);
+                if (c1.getCenterX() + radius >= graphPane.getWidth()) {
+                    xVel = -xVel;
+                } else if (c1.getCenterX() - radius <= 0) {
+                    xVel = -xVel;
                     score--;
 
-                    //horizontal paddle collisions
-                } else if ((Math.abs(c1.getCenterX() - r.getX() - r.getWidth() - radius) < tol) && c1.getCenterY() >= r.getY() - radius && c1.getCenterY() <= r.getY() + r.getHeight() + radius) {
-                    if (xVel<0){
-                        score++;
-                        counter++;
-                    }
-                    xVel = Math.abs(xVel);
+                    //horizontal paddle collisions from right side
+                } else if (c1.getCenterX() - radius <= r.getX() + r.getWidth()
+                        && c1.getCenterY() + radius >= r.getY()
+                        && c1.getCenterY() - radius <= r.getY() + r.getHeight()
+                        && xVel <0) {
+                            score++;
+                            counter++;
+                            xVel = -xVel;
                 }
                 c1.setCenterX(c1.getCenterX() + xVel);
 
                 //Vertical wall collisions
-                if (Math.abs(c1.getCenterY() - (graphPane.getHeight() - radius)) < tol) {
-                    yVel = -Math.abs(yVel);
-                } else if (Math.abs(c1.getCenterY() - radius) < tol) {
-                    yVel = Math.abs(yVel);
+                if (c1.getCenterY()+ radius >= graphPane.getHeight()) {
+                    yVel = -yVel;
+                } else if (c1.getCenterY() - radius <= 0) {
+                    yVel = -yVel;
                 }
                 c1.setCenterY(c1.getCenterY() + yVel);
+
                 scoreField.setText("Score: " + String.valueOf(score));
                 if (counter == 2){
                     counter = 0;
