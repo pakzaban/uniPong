@@ -25,7 +25,7 @@ public class Controller {
     public Label messageField;
 
     private final int radius = 20;
-    private final double vel = 13;
+    private double vel;
     private double angle;
     double xVel;
     double yVel;
@@ -34,6 +34,8 @@ public class Controller {
     private Rectangle r;
     private int score;
     private AnimationTimer at;
+    private int counter;
+    private int paddleVel = 50;
 
     public void initialize() {
         graphPane.getChildren().clear();
@@ -47,12 +49,14 @@ public class Controller {
         r.setEffect(shadow);
         graphPane.getChildren().addAll(c1, r);
 
+        vel = 10;
         angle = randomAngle();
         xVel = vel * Math.cos(angle);
         yVel = vel * Math.sin(angle);
         score = 0;
-        messageField.setVisible(false);
+        counter = 0;
 
+        messageField.setVisible(false);
         startButton.setOpacity(1.0);
         stopButton.setOpacity(0.5);
     }
@@ -63,35 +67,45 @@ public class Controller {
 
             public void handle(long l) {
                 tol = Math.abs(xVel);
+                //horizontal wall collisions
                 if (Math.abs(c1.getCenterX() - (graphPane.getWidth() - radius)) < tol) {
                     xVel = -Math.abs(xVel);
                 } else if (Math.abs(c1.getCenterX() - radius) < tol) {
                     xVel = Math.abs(xVel);
                     score--;
 
+                    //horizontal paddle collisions
                 } else if ((Math.abs(c1.getCenterX() - r.getX() - r.getWidth() - radius) < tol) && c1.getCenterY() >= r.getY() - radius && c1.getCenterY() <= r.getY() + r.getHeight() + radius) {
                     if (xVel<0){
                         score++;
+                        counter++;
                     }
                     xVel = Math.abs(xVel);
                 }
                 c1.setCenterX(c1.getCenterX() + xVel);
 
+                //Vertical wall collisions
                 if (Math.abs(c1.getCenterY() - (graphPane.getHeight() - radius)) < tol) {
                     yVel = -Math.abs(yVel);
                 } else if (Math.abs(c1.getCenterY() - radius) < tol) {
                     yVel = Math.abs(yVel);
                 }
-
                 c1.setCenterY(c1.getCenterY() + yVel);
                 scoreField.setText("Score: " + String.valueOf(score));
+                if (counter == 2){
+                    counter = 0;
+                    xVel++;
+                    yVel++;
+                    paddleVel +=3;
+                    System.out.println(xVel+ ", " +yVel);
+                }
 
                 if(stopButton.isPressed()){
                     at.stop();
                     messageField.setText("Game Over");
                     messageField.setVisible(true);
                 }
-                if (score == 5){
+                if (score == 10){
                     at.stop();
                     messageField.setText("YOU WON!");
                     messageField.setVisible(true);
@@ -111,11 +125,11 @@ public class Controller {
 
     public void keyUsed(javafx.scene.input.KeyEvent ke) {
 
-        if (ke.getText().equals("p") && r.getY()>= 50) {
-            r.setY(r.getY() - 50);
+        if (ke.getText().equals("p") && r.getY()>= paddleVel) {
+            r.setY(r.getY() - paddleVel);
         }
-        if (ke.getText().equals("l") && r.getY() + r.getHeight() <= graphPane.getHeight()-50) {
-            r.setY(r.getY() + 50);
+        if (ke.getText().equals("l") && r.getY() + r.getHeight() <= graphPane.getHeight()-paddleVel) {
+            r.setY(r.getY() + paddleVel);
         }
     }
     public void startPressed(){
