@@ -24,7 +24,6 @@ public class Controller {
     private double angle;
     double xVel;
     double yVel;
-    private double tol;
     private Circle c1;
     private Rectangle r;
     private int score;
@@ -62,7 +61,7 @@ public class Controller {
         at = new AnimationTimer() {
 
             public void handle(long l) {
-                tol = Math.abs(xVel);
+
                 //horizontal wall collisions
                 if (c1.getCenterX() + radius >= graphPane.getWidth()) {
                     xVel = -xVel;
