@@ -3,12 +3,20 @@ package com.pakzaban;
 import javafx.animation.AnimationTimer;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Optional;
 
 
 public class Controller {
@@ -20,6 +28,7 @@ public class Controller {
     public Label messageField;
     public Label levelField;
     public Button nextLevelButton;
+    public Label highScoreField;
 
     private final int radius = 20;
     private double vel;
@@ -33,6 +42,7 @@ public class Controller {
     private int counter;
     private int paddleVel;
     private int level;
+    private int highScore = 0;
 
     public void initialize() {
         graphPane.getChildren().clear();
@@ -60,6 +70,14 @@ public class Controller {
         stopButton.setOpacity(0.5);
         levelField.setText("Level " + level);
         nextLevelButton.setVisible(false);
+
+        try {
+            highScore = Integer.parseInt(readHighScore().split(" ")[3]);
+            highScoreField.setText(readHighScore());
+        }
+        catch (Exception e) {
+        }
+
     }
 
     public void moveBall() {
@@ -134,7 +152,6 @@ public class Controller {
         startButton.setDisable(true);
         stopButton.setOpacity(1.0);
         stopButton.requestFocus();
-
     }
     public void stopPressed(){
         startButton.setOpacity(1.0);
@@ -160,5 +177,37 @@ public class Controller {
         stopButton.requestFocus();
     }
 
+    public void quitPressed(){
+        stopPressed();
+        if(score > highScore){
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("High Score");
+            dialog.setHeaderText("Congrats! You set a new high score.");
+            dialog.setContentText("Enter your name");
+            Optional<String> result = dialog.showAndWait();
+            if(result.isPresent()){
+                String name = result.get();
+                Date date = new Date();
+                SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                String highScoreString = "High score of " + score + " was set by "+ name +" on "+ formatter.format(date);
 
+                try (FileWriter fileWriter = new FileWriter("data.txt")) {
+                    fileWriter.write(highScoreString);
+                }
+                catch (Exception e){
+
+                }
+            }
+        }
+        System.exit(1);
+    }
+    public String readHighScore(){
+        try (FileReader fileReader = (new FileReader("data.txt"))) {
+            BufferedReader reader = new BufferedReader(fileReader);
+            return reader.readLine();
+        }
+        catch (Exception e){
+        }
+        return "";
+    }
 }
