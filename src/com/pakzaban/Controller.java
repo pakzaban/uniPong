@@ -18,6 +18,8 @@ public class Controller {
     public Button startButton;
     public Button stopButton;
     public Label messageField;
+    public Label levelField;
+    public Button nextLevelButton;
 
     private final int radius = 20;
     private double vel;
@@ -30,6 +32,7 @@ public class Controller {
     private AnimationTimer at;
     private int counter;
     private int paddleVel;
+    private int level;
 
     public void initialize() {
         graphPane.getChildren().clear();
@@ -50,18 +53,18 @@ public class Controller {
         paddleVel = 50;
         score = 0;
         counter = 0;
+        level = 1;
 
         messageField.setVisible(false);
         startButton.setOpacity(1.0);
         stopButton.setOpacity(0.5);
+        levelField.setText("Level " + level);
+        nextLevelButton.setVisible(false);
     }
 
     public void moveBall() {
-
         at = new AnimationTimer() {
-
             public void handle(long l) {
-
                 //horizontal wall collisions
                 if (c1.getCenterX() + radius >= graphPane.getWidth()) {
                     xVel = -xVel;
@@ -96,36 +99,31 @@ public class Controller {
                     paddleVel +=3;
                     System.out.println(paddleVel+ ", " + xVel+ ", " +yVel);
                 }
-
                 if(stopButton.isPressed()){
-                    at.stop();
-                    messageField.setText("Game Over");
-                    messageField.setVisible(true);
-                }
-                if (score == 10){
-                    at.stop();
-                    messageField.setText("YOU WON!");
-                    messageField.setVisible(true);
                     stopPressed();
+                    messageField.setText("Game Over");
+                }
+                if (score == 5 * level){
+                    stopPressed();
+                    messageField.setText("YOU WON!");
+                    nextLevelButton.setVisible(true);
+                    nextLevelButton.requestFocus();
                 }
                 if (score == -5){
-                    at.stop();
-                    messageField.setText("YOU LOST!");
-                    messageField.setVisible(true);
                     stopPressed();
+                    messageField.setText("YOU LOST!");
                 }
             }
         };
         at.start();
 
     }
-
     public void keyUsed(javafx.scene.input.KeyEvent ke) {
 
-        if (ke.getText().equals("p") && r.getY()>= 50) {
+        if (ke.getText().equals("h") && r.getY() - paddleVel >= 0) {
             r.setY(r.getY() - paddleVel);
         }
-        if (ke.getText().equals("l") && r.getY() + r.getHeight() <= graphPane.getHeight()-50) {
+        if (ke.getText().equals("b") && r.getY() + r.getHeight() + paddleVel <= graphPane.getHeight()) {
             r.setY(r.getY() + paddleVel);
         }
     }
@@ -143,10 +141,23 @@ public class Controller {
         startButton.setDisable(false);
         stopButton.setOpacity(0.5);
         startButton.requestFocus();
+        messageField.setVisible(true);
+        at.stop();
     }
 
     public double randomAngle() {
         return  (Math.PI /2) * Math.random() - Math.PI/4;
+    }
+    public void nextLevelPressed(){
+        level++;
+        levelField.setText("Level "+ level);
+        nextLevelButton.setVisible(false);
+        messageField.setVisible(false);
+        moveBall();
+        startButton.setOpacity(0.5);
+        startButton.setDisable(true);
+        stopButton.setOpacity(1.0);
+        stopButton.requestFocus();
     }
 
 
