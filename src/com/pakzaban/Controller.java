@@ -4,10 +4,14 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
@@ -46,14 +50,22 @@ public class Controller {
 
     public void initialize() {
         graphPane.getChildren().clear();
-        DropShadow shadow =  new DropShadow();
-        shadow.setRadius(5);
-        shadow.setOffsetX(3);
-        c1 = new Circle(200, 300, radius, Color.MAGENTA);
-        c1.setEffect(shadow);
-        r = new Rectangle(150, 250, 5, 100);
+
+        Stop s1 = new Stop(0.5, Color.MAGENTA);
+        Stop s2 = new Stop(1.0, Color.PURPLE);
+        Stop[] stops = {s1,s2};
+        RadialGradient rg = new RadialGradient(0,-0.2,0.5,0.5,0.7,true, CycleMethod.NO_CYCLE, stops);
+        c1 = new Circle(200, 300, radius);
+        c1.setFill(rg);
+
+        InnerShadow is = new InnerShadow();
+        is.setBlurType(BlurType.THREE_PASS_BOX);
+        is.setHeight(60);
+        is.setWidth(10);
+        r = new Rectangle(150, 250, 10, 100);
         r.setFill(Color.DARKTURQUOISE);
-        r.setEffect(shadow);
+        r.setEffect(is);
+
         graphPane.getChildren().addAll(c1, r);
 
         vel = 10;
